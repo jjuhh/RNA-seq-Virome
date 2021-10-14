@@ -32,6 +32,6 @@ for ( i in 1:as.numeric(length(HeaderIndex_Node)-1)) {
     similarity <- system(paste0("grep Similarity ","stretcher.result.",Global_start,"_",Global_end,".tmp"," | sed -e 's/.*(//g' | sed -e 's/%)//g'"), intern=T)
     
     
-    write(paste(as.character(Allref[HeaderIndex[i],]), as.character(Allref[HeaderIndex[j],]), as.character(similarity), sep="|"), file=paste0("virus.global.similarity.virusNum",Global_start,"_",Global_end,".txt") ,append=TRUE)
+    write(paste(as.character(Allref[HeaderIndex_Node[i],]), as.character(Allref[HeaderIndex[j],]), as.character(similarity), sep="|"), file=paste0("virus.global.similarity.virusNum",Global_start,"_",Global_end,".txt") ,append=TRUE)
   }
 }
