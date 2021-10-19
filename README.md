@@ -23,8 +23,9 @@ Input : Blastn outfmt 6 files
 Output : bed file to mask          
 3. masking fasta file         
 Input : fasta file, bed file prepared above            
-Output : fasta file masked            
+Output : fasta file masked     
 
+### Find resemble region between virus and human CHM13 reference 
 ```
 blastn -query virus_genome.fna \ 
 -db chm13.draft_v1.1.fasta  \
@@ -32,13 +33,11 @@ blastn -query virus_genome.fna \
 -word_size 11 -outfmt '6 qseqid sseqid pident evalue bitscore qstart qend sstart send staxids sscinames scomnames sskingdoms stitle' \
 -num_threads 30 -evalue 1e-3 > Human.virus.resemble.regions.identification.stout 2> Human.virus.resemble.regions.identification.sterr
 ```
-
-
+###  Formatting to BED and merge the resemble regions.   
 ```
 bedtools merge -i <(cut -f 1,6,7 Human.virus.resemble.regions.identification| sort -k1,1V -k2n ) > Human.virus.resemble.regions.identification.merge.bed
 ```
-
-
+### Masking resemble region
 ```
 bedtools maskfasta \
 -fi virus_genome.fna \
@@ -46,7 +45,7 @@ bedtools maskfasta \
 -fo virus_genome.masking.fna \
 -fullHeader
 ```
-
+### Find resemble region between virus and human bacterial reference 
 ```
 blastn \
 -query virus_genome.fna \
@@ -56,12 +55,12 @@ blastn \
 -outfmt '6 qseqid sseqid pident evalue bitscore qstart qend sstart send staxids sscinames scomnames sskingdoms stitle' \
 -num_threads 30 \
 -evalue 1e-3 > Human.virus.prokaryotes.resemble.regions.identification.stout 2> Human.virus.prokarytoes.resemble.regions.identification.sterr
-````
-
+```
+###  Formatting to BED and merge the resemble regions.   
 ```
 bedtools merge -i <(cut -f 1,6,7 Human.virus.prokaryotes.resemble.regions.identification| sort -k1,1V -k2n ) > Human.virus.prokaryotes.resemble.regions.identification.merge.bed
 ```
-
+### Masking resemble region
 ```
 bedtools maskfasta \
 -fi virus_genome.making.fna \
@@ -69,9 +68,21 @@ bedtools maskfasta \
 -fo virus_genome.Human_prokaryotes_masking.fna \
 -fullHeader
 ```
-
-
+## Blast search
+``` 
+mkdir ${path_to_res_first_blast}
+blastn -db ${path_to_database}/virus_genome_for_first_blast.db -query ${path_to_unmapped}/${sample}.unmapped.fasta -out ${path_to_res_first_blast}/${sample}.first_blast.txt -word_size 11 -outfmt 6 -num_threads 50 -evalue ${threshold}
 ```
-Rscript virus.similarity.cacluattion.R ${start_virus} #{end_virus}
+## Similarity Calculation between virus detected by BLAST 
+```
+이부분 수정 해야함.
 ```
 
+## First Hit read Extreact
+```
+fgrep -A 1 -f <(cut -f 1 ${path_to_res_first_blast}/${sample}.first_blast.txt) ${path_to_unmapped}/${sample}.unmapped.fasta | grep -G -v "^-" > ${path_to_res_first_blast}/${sample}.first_blast_hit.fasta
+```
+# 6. second blast search
+```
+blastn -db ${path_to_database}/virus_genome_for_second_blast.db -query ${path_to_res_first_blast}/${sample}.first_blast_hit.fasta -out ${path_to_res_first_blast}/${sample}.second_blast.txt -word_size 11 -outfmt '6 qseqid sseqid pident evalue bitscore sstart send staxids sscinames scomnames sskingdoms stitle' -num_threads 50 -evalue ${threshold}
+```
