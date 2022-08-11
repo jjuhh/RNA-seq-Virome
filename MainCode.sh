@@ -38,7 +38,9 @@ mkdir ${path_to_res_first_blast}
 blastn -db ${path_to_database}/virus_genome_for_first_blast.db -query ${path_to_unmapped}/${sample}.unmapped.fasta -out ${path_to_res_first_blast}/${sample}.first_blast.txt -word_size 11 -outfmt 6 -num_threads 50 -evalue ${threshold}
 
 # 5. read. extract
-fgrep -A 1 -f <(cut -f 1 ${path_to_res_first_blast}/${sample}.first_blast.txt) ${path_to_unmapped}/${sample}.unmapped.fasta | grep -G -v "^-" > ${path_to_res_first_blast}/${sample}.first_blast_hit.fasta
+cut -f 1 ${path_to_res_first_blast}/${sample}.first_blast.txt > ${path_to_res_first_blast}/firstBlast.readName.txt
+grep -A 1 -f ${path_to_res_first_blast}/firstBlast.readName.txt  ${path_to_unmapped}/${sample}.unmapped.fasta | grep -G -v "^-" > ${path_to_res_first_blast}/${sample}.first_blast_hit.fasta
+#rm ${path_to_res_first_blast}/firstBlast.readName.txt
 
 # 6. second blast search
 blastn -db ${path_to_database}/virus_genome_for_second_blast.db -query ${path_to_res_first_blast}/${sample}.first_blast_hit.fasta -out ${path_to_res_first_blast}/${sample}.second_blast.txt -word_size 11 -outfmt '6 qseqid sseqid pident evalue bitscore sstart send staxids sscinames scomnames sskingdoms stitle' -num_threads 50 -evalue ${threshold}
