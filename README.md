@@ -75,8 +75,7 @@ blastn -db ${path_to_database}/virus_genome_for_first_blast.db -query ${path_to_
 ```
 ## Similarity Calculation between virus detected by BLAST 
 ```
-이부분 수정 해야함.
-1st db는 그대로 가되, 2nd db만 similarity >90 인것들 concat 하기
+In debugging
 ```
 
 ## First Hit read Extreact
